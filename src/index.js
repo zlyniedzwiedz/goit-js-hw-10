@@ -11,10 +11,10 @@ const aboutCountry = document.querySelector('.country-info');
 
 let userInput;
 
-//info about countries
 
-let flag, header, countryCapital, countryPopulation, countryLanguage;
 
+
+//search function
 const countrySearch = () => {
   userInput = searchInputField.value.trim();
 
@@ -57,7 +57,7 @@ const countrySearch = () => {
       });
   }
 };
-
+//pick function
 const countryPicker = input => {
   fetchCountries(input)
     .then(data => {
@@ -74,7 +74,7 @@ const countryPicker = input => {
       return;
     });
 };
-
+//data corrrectness function
 const dataCheck = data => {
   if (typeof data === 'object') {
     const newData = data.length >= 1 ? data : `-`;
@@ -87,11 +87,11 @@ const dataCheck = data => {
 
   return data;
 };
-
+//input correctness function
 const checkIfInputCorrect = data => {
   return /^[a-zA-Z\s\W]*$/.test(data);
 };
-
+//input field event listener
 searchInputField.addEventListener(
   'input',
   debounce(
@@ -106,46 +106,50 @@ searchInputField.addEventListener(
     DEBOUNCE_DELAY
   )
 );
-
+//list of countries event listener
 listOfCountries.addEventListener('click', event => {
   if (event.target.nodeName === 'LI') {
     searchInputField.value = event.target.textContent;
     countryPicker(event.target.textContent);
+   
     return;
   }
 
   if (event.target.nodeName === 'IMG') {
     searchInputField.value = event.target.parentNode.textContent;
     countryPicker(event.target.parentNode.textContent);
-
+   
     return;
   }
   return;
 });
 
+
+//list of countries markup
 function countryListMarkup(data) {
-  const markup = data
+    
+ const markup = data
     .map(result => {
-      return `<li class="list__item"> 
-        <img class="list__flag" src="${result.flag}" alt="Flag of ${result.name}" width="55" >
-        <p class="list__name">${result.name}</p></li>`;
+      return `<li><img src="${result.flag}">${result.name}</li>`;
     })
     .join('');
-  listOfCountries.innerHTML = markup;
+  listOfCountries.insertAdjacentHTML('afterbegin', markup)
 }
-
+//country info markup with number of languages check
 function countryInfoMarkup(data) {
+    let lang = "Language"
+    
+    if (data[0].languages.length > 1) {
+        lang = "Languages"
+        
+    }
   const markup = data
     .map(result => {
-      return `<img class="info__flag" src="${result.flag}" alt="Flag of ${
-        result.name
-      }" width="55" >
+      return `<img class="info__flag" src="${result.flag}" alt="Flag of ${result.name}" width="55">
       <span class="info__name">${result.name}</span>
       <p class="info__data"><b>Capital</b>: ${result.capital}</p>
-      <p class="info__data"><b>Population</b>: ${result.population}</p>
-      <p class="info__data"><b>Languages</b>: ${result.languages.map(
-        language => ' ' + language.name
-      )}</p>`;
+        <p class="info__data"><b>Population</b>: ${result.population}</p>
+        <p class="info__data"><b>${lang}</b>: ${result.languages.map(language => ' ' + language.name)}</p>`;
     })
     .join('');
   aboutCountry.innerHTML = markup;
